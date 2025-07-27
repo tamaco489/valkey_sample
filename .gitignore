@@ -1,0 +1,17 @@
+# Files and directories to exclude from Git repository
+
+# Valkey data directory (persistent data)
+docker/valkey/mnt/
+
+# MySQL data directory (persistent data)
+docker/mysql/mnt/
+
+# Other common files to exclude
+*.log
+*.txt
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*.swo
+*~

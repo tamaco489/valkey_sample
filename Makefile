@@ -16,16 +16,19 @@ logs: ## Show logs
 # ================================================================================================
 # batch
 # ================================================================================================
-.PHONY: batch-set batch-sadd batch-rpush
+.PHONY: batch-set batch-sadd batch-rpush batch-get
 
-batch-set: ## Run batch SET (use FLAGS=-large=true for large data, default: small)
+batch-set: ## Run batch SET (optional: FLAGS="-large=true", default: small)
 	REDIS_HOST=localhost go run cmd/batch/set/*.go $(FLAGS)
 
 batch-sadd: ## Run batch SADD (use FLAGS=-large=true for large data, default: small)
 	REDIS_HOST=localhost go run cmd/batch/sadd/*.go $(FLAGS)
 
-batch-rpush: ## Run batch RPUSH (use FLAGS=-large=true for large data, default: small)
+batch-rpush: ## Run batch RPUSH (optional: FLAGS="-large=true", default: small)
 	REDIS_HOST=localhost go run cmd/batch/rpush/*.go $(FLAGS)
+
+batch-get: ## Run batch GET for ALL 100,000 user IDs (required: CUSTOMER_ID=1234)
+	REDIS_HOST=localhost go run cmd/batch/get/*.go -customer_id=$(CUSTOMER_ID)
 
 # ================================================================================================
 # redis

@@ -33,7 +33,7 @@ const (
 
 // Redis key format constants
 const (
-	RedisKeyFormat = "customer:%d:user:%d:items"
+	RedisKeyFormat = "customer:{%d}:user:{%d}:items"
 )
 
 // Data format constants

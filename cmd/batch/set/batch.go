@@ -26,15 +26,10 @@ func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCo
 	userIDs := bp.generateUserIDs(userCount)
 	itemIDs := bp.generateItemIDs(itemMinCount, itemMaxCount)
 
-	slog.InfoContext(ctx, "Generated IDs",
-		"userCount", len(userIDs),
-		"itemCount", len(itemIDs))
-
-	var totalProcessed int
+	slog.InfoContext(ctx, "generated ids", "user_count", len(userIDs), "item_count", len(itemIDs))
 
 	for _, userID := range userIDs {
 		customerID := bp.generateCustomerID()
-
 		userItemCount := rand.Intn(itemMaxCount-itemMinCount+1) + itemMinCount
 		userItemIDs := bp.generateItemIDs(itemMinCount, itemMaxCount)
 
@@ -43,13 +38,8 @@ func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCo
 				break
 			}
 			itemID := userItemIDs[i]
-
 			key := bp.formatRedisKey(customerID, userID)
-			data := fmt.Sprintf(DataFormat, customerID, userID, itemID)
-
-			slog.InfoContext(ctx, "Setting user item data", "key", key, "data", data, "customerID", customerID, "userID", userID, "itemID", itemID)
-
-			totalProcessed++
+			slog.InfoContext(ctx, "setting user item data", "key", key, "item_id", itemID)
 		}
 	}
 

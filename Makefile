@@ -1,3 +1,25 @@
+# ================================================================================================
+# api
+# ================================================================================================
+.PHONY: build run test clean
+
+build:
+	go build -o build/api/core/main cmd/api/core/main.go
+	chmod +x build/api/core/main
+
+run: build
+	build/api/core/main -p 8080
+
+test:
+	go test ./...
+
+clean:
+	rm -rf build/api/core/main
+	go clean
+
+# ================================================================================================
+# valkey
+# ================================================================================================
 .PHONY: valkey-up valkey-down valkey-restart valkey-rebuild valkey-logs valkey-cli
 
 valkey-up:
@@ -18,7 +40,9 @@ valkey-logs:
 valkey-cli:
 	docker compose exec valkey valkey-cli
 
-
+# ================================================================================================
+# aws (elasticache)
+# ================================================================================================
 .PHONY: elasticache-valkey-versions elasticache-valkey-versions-only valkey-docker-tags
 
 elasticache-valkey-versions:

@@ -6,6 +6,9 @@ docker/valkey/mnt/
 # MySQL data directory (persistent data)
 docker/mysql/mnt/
 
+# Build artifacts
+build/
+
 # Other common files to exclude
 *.log
 *.txt

@@ -11,6 +11,7 @@ type RedisService interface {
 	SetBatchWithPipeline(ctx context.Context, kv map[string]string, expiration time.Duration) error
 	GetBatchWithPipeline(ctx context.Context, keys []string) (map[string]string, error)
 	SAddBatchWithPipeline(ctx context.Context, kv map[string][]string, expiration time.Duration) error
+	SMembersBatchWithPipeline(ctx context.Context, keys []string) (map[string][]string, error)
 	RPushBatchWithPipeline(ctx context.Context, kv map[string][]string, expiration time.Duration) error
 	Close() error
 }

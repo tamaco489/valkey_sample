@@ -35,8 +35,14 @@ redis-up: ## Start redis container
 redis-down: ## Stop redis container
 	docker compose down -v redis
 
-redis-cli: ## Run redis CLI
+redis: ## Start session with redis-cli
 	docker compose exec redis redis-cli
+
+redis-cli: ## Run redis command with arguments (usage: make redis-cli CMD="DBSIZE")
+	docker compose exec redis redis-cli $(CMD)
+
+redis-flush: ## Flush all data from Redis
+	docker compose exec redis redis-cli FLUSHALL
 
 # ================================================================================================
 # aws (elasticache)

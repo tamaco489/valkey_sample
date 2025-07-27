@@ -16,25 +16,16 @@ logs: ## Show logs
 # ================================================================================================
 # batch
 # ================================================================================================
-.PHONY: batch-set-small batch-set-large batch-sadd-small batch-sadd-large
+.PHONY: batch-set batch-sadd batch-rpush
 
-batch-set-small: ## Run batch set with small data
-	REDIS_HOST=localhost go run cmd/batch/set/*.go -large=false
+batch-set: ## Run batch SET (use FLAGS=-large=true for large data, default: small)
+	REDIS_HOST=localhost go run cmd/batch/set/*.go $(FLAGS)
 
-batch-set-large: ## Run batch set with large data
-	REDIS_HOST=localhost go run cmd/batch/set/*.go -large=true
+batch-sadd: ## Run batch SADD (use FLAGS=-large=true for large data, default: small)
+	REDIS_HOST=localhost go run cmd/batch/sadd/*.go $(FLAGS)
 
-batch-sadd-small: ## Run batch SADD with small data
-	REDIS_HOST=localhost go run cmd/batch/sadd/*.go -large=false
-
-batch-sadd-large: ## Run batch SADD with large data
-	REDIS_HOST=localhost go run cmd/batch/sadd/*.go -large=true
-
-batch-rpush-small: ## Run batch RPUSH with small data
-	REDIS_HOST=localhost go run cmd/batch/rpush/*.go -large=false
-
-batch-rpush-large: ## Run batch RPUSH with large data
-	REDIS_HOST=localhost go run cmd/batch/rpush/*.go -large=true
+batch-rpush: ## Run batch RPUSH (use FLAGS=-large=true for large data, default: small)
+	REDIS_HOST=localhost go run cmd/batch/rpush/*.go $(FLAGS)
 
 # ================================================================================================
 # redis

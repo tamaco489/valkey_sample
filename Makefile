@@ -16,13 +16,19 @@ logs: ## Show logs
 # ================================================================================================
 # batch
 # ================================================================================================
-.PHONY: batch-set-small batch-set-large
+.PHONY: batch-set-small batch-set-large batch-sadd-small batch-sadd-large
 
 batch-set-small: ## Run batch set with small data
 	REDIS_HOST=localhost go run cmd/batch/set/*.go -large=false
 
 batch-set-large: ## Run batch set with large data
 	REDIS_HOST=localhost go run cmd/batch/set/*.go -large=true
+
+batch-sadd-small: ## Run batch SADD with small data
+	REDIS_HOST=localhost go run cmd/batch/sadd/*.go -large=false
+
+batch-sadd-large: ## Run batch SADD with large data
+	REDIS_HOST=localhost go run cmd/batch/sadd/*.go -large=true
 
 # ================================================================================================
 # redis

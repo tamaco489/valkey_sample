@@ -9,6 +9,7 @@ import (
 type RedisService interface {
 	Ping(ctx context.Context) error
 	SetBatchWithPipeline(ctx context.Context, kv map[string]string, expiration time.Duration) error
+	SAddBatchWithPipeline(ctx context.Context, kv map[string][]string, expiration time.Duration) error
 	Close() error
 }
 

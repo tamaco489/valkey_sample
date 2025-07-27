@@ -10,9 +10,6 @@ import (
 func Setup() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	// Health check endpoint
-	mux.HandleFunc("GET /health", handler.HealthCheck)
-
 	// API v1 group
 	mux.HandleFunc("GET /api/v1/health", handler.HealthCheck)
 

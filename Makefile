@@ -30,6 +30,12 @@ batch-sadd-small: ## Run batch SADD with small data
 batch-sadd-large: ## Run batch SADD with large data
 	REDIS_HOST=localhost go run cmd/batch/sadd/*.go -large=true
 
+batch-rpush-small: ## Run batch RPUSH with small data
+	REDIS_HOST=localhost go run cmd/batch/rpush/*.go -large=false
+
+batch-rpush-large: ## Run batch RPUSH with large data
+	REDIS_HOST=localhost go run cmd/batch/rpush/*.go -large=true
+
 # ================================================================================================
 # redis
 # ================================================================================================

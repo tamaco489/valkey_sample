@@ -2,9 +2,9 @@
 # api
 # ================================================================================================
 # docker
-.PHONY: run down logs
+.PHONY: up down logs
 
-run: ## Start containers
+up: ## Start containers
 	docker compose up -d core-api redis
 
 down: ## Stop containers

@@ -1,5 +1,12 @@
 package redis
 
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/redis/go-redis/v9"
+)
 
 // Get retrieves a value from Redis
 func (c *client) Get(ctx context.Context, key string) (string, error) {

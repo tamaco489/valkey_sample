@@ -47,13 +47,11 @@ func (bp *batchProcessor) formatRedisKey(customerID, userID uint32) string {
 
 // processBatch processes the entire batch
 func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCount, itemMaxCount int) error {
+	customerID := bp.generateCustomerID()
 	userIDs := bp.generateUserIDs(userCount)
-	itemIDs := bp.generateItemIDs(itemMinCount, itemMaxCount)
-
-	slog.InfoContext(ctx, "generated ids", "user_count", len(userIDs), "item_count", len(itemIDs))
+	slog.InfoContext(ctx, "gen redis customer key", "customer_id", customerID)
 
 	for _, userID := range userIDs {
-		customerID := bp.generateCustomerID()
 		userItemCount := rand.Intn(itemMaxCount-itemMinCount+1) + itemMinCount
 		userItemIDs := bp.generateItemIDs(itemMinCount, itemMaxCount)
 
@@ -71,24 +69,10 @@ func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCo
 		bp.userItemMap[key] = strings.Join(itemIDStrings, ",")
 	}
 
-	slog.InfoContext(ctx, "user item map contents", "total_keys", len(bp.userItemMap))
-	for key, itemIDsStr := range bp.userItemMap {
-		itemIDs := strings.Split(itemIDsStr, ",")
-		slog.InfoContext(ctx, "user items", "key", key, "item_count", len(itemIDs), "item_ids", itemIDs)
-	}
-
-	// Redisにデータを保存（接続可能な場合のみ）
-	if bp.redisClient != nil {
-		slog.InfoContext(ctx, "saving data to Redis using pipeline")
-		expiration := 24 * time.Hour
-		if err := bp.redisClient.SetWithPipeline(ctx, bp.userItemMap, expiration); err != nil {
-			slog.ErrorContext(ctx, "failed to save data to Redis", "error", err)
-			return fmt.Errorf("failed to save data to Redis: %w", err)
-		}
-		slog.InfoContext(ctx, "successfully saved data to Redis using pipeline")
-		bp.redisClient.Close()
-	} else {
-		slog.InfoContext(ctx, "skipping Redis save - no connection available")
+	expiration := 24 * time.Hour
+	if err := bp.redisClient.SetWithPipeline(ctx, bp.userItemMap, expiration); err != nil {
+		slog.ErrorContext(ctx, "failed to save data to Redis", "error", err)
+		return fmt.Errorf("failed to save data to Redis: %w", err)
 	}
 
 	return nil

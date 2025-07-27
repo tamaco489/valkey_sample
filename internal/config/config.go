@@ -42,7 +42,7 @@ func Load() *Config {
 			Port:     getEnv("REDIS_PORT", "6379"),
 			Password: getEnv("REDIS_PASSWORD", ""),
 			DB:       getEnv("REDIS_DB", "0"),
-			PoolSize: getEnv("REDIS_POOL_SIZE", "10"),
+			PoolSize: getEnv("REDIS_POOL_SIZE", "3"),
 		},
 	}
 }

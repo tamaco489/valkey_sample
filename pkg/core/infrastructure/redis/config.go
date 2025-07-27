@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 )
@@ -21,13 +22,13 @@ func LoadConfig() *Config {
 		Port:     getEnvAsInt("REDIS_PORT", 6379),
 		Password: getEnv("REDIS_PASSWORD", ""),
 		DB:       getEnvAsInt("REDIS_DB", 0),
-		PoolSize: getEnvAsInt("REDIS_POOL_SIZE", 10),
+		PoolSize: getEnvAsInt("REDIS_POOL_SIZE", 3),
 	}
 }
 
 // GetAddr returns the Redis address string
 func (c *Config) GetAddr() string {
-	return c.Host + ":" + strconv.Itoa(c.Port)
+	return fmt.Sprintf("%s:%d", c.Host, c.Port)
 }
 
 // getEnv gets environment variable with fallback
@@ -46,4 +47,4 @@ func getEnvAsInt(key string, fallback int) int {
 		}
 	}
 	return fallback
-} 
+}

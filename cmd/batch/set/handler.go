@@ -88,28 +88,16 @@ func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCo
 
 func handler(isLargeData bool) error {
 	ctx := context.Background()
-
-	// データサイズに応じた設定を決定
-	var userCount, itemMinCount, itemMaxCount int
-	if isLargeData {
-		userCount = largeDataUserCount
-		itemMinCount = largeDataItemMinCount
-		itemMaxCount = largeDataItemMaxCount
-	} else {
-		userCount = smallDataUserCount
-		itemMinCount = smallDataItemMinCount
-		itemMaxCount = smallDataItemMaxCount
-	}
-
+	cfg := NewDataConfig(isLargeData)
 	slog.InfoContext(ctx, "Starting batch processing",
 		"dataSize", map[bool]string{true: "large", false: "small"}[isLargeData],
-		"userCount", userCount,
-		"itemMinCount", itemMinCount,
-		"itemMaxCount", itemMaxCount)
+		"userCount", cfg.UserCount,
+		"itemMinCount", cfg.ItemMinCount,
+		"itemMaxCount", cfg.ItemMaxCount)
 
 	batchProcessor := newBatchProcessor()
 
-	if err := batchProcessor.processBatch(ctx, userCount, itemMinCount, itemMaxCount); err != nil {
+	if err := batchProcessor.processBatch(ctx, cfg.UserCount, cfg.ItemMinCount, cfg.ItemMaxCount); err != nil {
 		return fmt.Errorf("batch processing failed: %w", err)
 	}
 

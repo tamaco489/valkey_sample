@@ -7,9 +7,10 @@ type DataConfig struct {
 	ItemMaxCount int
 }
 
-// GetDataConfig returns configuration based on data size flag
-func GetDataConfig(isLargeData bool) DataConfig {
-	if isLargeData {
+// NewDataConfig creates a new data configuration
+// Default is small data, use isLarge=true for large data
+func NewDataConfig(isLarge bool) DataConfig {
+	if isLarge {
 		return DataConfig{
 			UserCount:    largeDataUserCount,
 			ItemMinCount: largeDataItemMinCount,

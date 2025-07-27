@@ -1,13 +1,16 @@
 # Files and directories to exclude from Git repository
 
-# Valkey data directory (persistent data)
-docker/valkey/mnt/
+# Redis data directory (persistent data)
+docker/redis/mnt/
 
 # MySQL data directory (persistent data)
 docker/mysql/mnt/
 
 # Build artifacts
 build/
+
+# .env file
+.env
 
 # Other common files to exclude
 *.log

@@ -1,13 +1,30 @@
 services:
-  valkey:
+  core-api:
+    platform: linux/amd64
+    image: cosmtrek/air:v1.62.0
+    container_name: core_api
+    working_dir: /go/src/github.com/tamaco489/valkey_sample
+    volumes:
+      - .:/go/src/github.com/tamaco489/valkey_sample
+      - ~/.cache/go-build:/root/.cache/go-build
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    env_file:
+      - .env
+
+  redis:
     image: valkey/valkey:8.1.3-alpine
-    container_name: valkey-server
+    container_name: core_redis
     ports:
       - "6379:6379"
     volumes:
-      - ./docker/valkey/mnt:/data
-      - ./docker/valkey/local/valkey.conf:/usr/local/etc/valkey/valkey.conf
-    command: valkey-server /usr/local/etc/valkey/valkey.conf
+      - ./docker/redis/mnt:/data
+      - ./docker/redis/local/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
     restart: unless-stopped
     environment:
       - TZ=Asia/Tokyo
+    env_file:
+      - .env

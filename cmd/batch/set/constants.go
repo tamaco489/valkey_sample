@@ -21,9 +21,9 @@ const (
 // Data generation mode constants
 const (
 	// 大量データ用設定
-	largeDataUserCount    = 1000 // ランダムに選択する user 数
-	largeDataItemMinCount = 100  // 最小選択 item 数
-	largeDataItemMaxCount = 500  // 最大選択 item 数
+	largeDataUserCount    = 100000 // ランダムに選択する user 数
+	largeDataItemMinCount = 100    // 最小選択 item 数
+	largeDataItemMaxCount = 500    // 最大選択 item 数
 
 	// 少量データ用設定
 	smallDataUserCount    = 3 // ランダムに選択する user 数

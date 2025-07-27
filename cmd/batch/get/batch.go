@@ -85,6 +85,12 @@ func (bp *batchProcessor) processBatch(ctx context.Context, customerID uint32) e
 		keys[i] = bp.formatRedisKey(customerID, userID)
 	}
 
+	slog.InfoContext(ctx, "fetching data from Redis",
+		"key_count", len(keys),
+		"first_key", keys[0],
+		"last_key", keys[len(keys)-1],
+	)
+
 	redisData, err := bp.redisClient.GetBatchWithPipeline(ctx, keys)
 	if err != nil {
 		return fmt.Errorf("failed to fetch data from Redis: %w", err)

@@ -17,3 +17,20 @@ valkey-logs:
 
 valkey-cli:
 	docker compose exec valkey valkey-cli
+
+
+.PHONY: elasticache-valkey-versions elasticache-valkey-versions-only valkey-docker-tags
+
+elasticache-valkey-versions:
+	aws elasticache describe-cache-engine-versions \
+		--profile $(AWS_PROFILE) \
+		--engine "Valkey" | jq .
+
+elasticache-valkey-versions-only:
+	aws elasticache describe-cache-engine-versions \
+		--profile $(AWS_PROFILE) \
+		--engine "Valkey" \
+		--query "CacheEngineVersions[].EngineVersion" | jq .
+
+valkey-docker-tags:
+	curl -s "https://hub.docker.com/v2/repositories/valkey/valkey/tags?page_size=100" | jq -r '.results[].name' | grep -E '^8\.1'

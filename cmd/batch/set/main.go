@@ -1,11 +1,17 @@
 package main
 
 import (
+	"flag"
 	"log"
 )
 
 func main() {
-	if err := handler(); err != nil {
+	// コマンドライン引数の定義
+	var isLargeData bool
+	flag.BoolVar(&isLargeData, "large", false, "Generate large amount of data (default: small)")
+	flag.Parse()
+
+	if err := handler(isLargeData); err != nil {
 		log.Fatal(err)
 	}
 }

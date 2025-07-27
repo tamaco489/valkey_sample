@@ -16,9 +16,13 @@ logs: ## Show logs
 # ================================================================================================
 # batch
 # ================================================================================================
-.PHONY: batch-set
-batch-set: ## Run batch set
-	go run cmd/batch/set/*.go
+.PHONY: batch-set-small batch-set-large
+
+batch-set-small: ## Run batch set with small data
+	go run cmd/batch/set/*.go -large=false
+
+batch-set-large: ## Run batch set with large data
+	go run cmd/batch/set/*.go -large=true
 
 # ================================================================================================
 # redis

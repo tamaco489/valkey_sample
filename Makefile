@@ -16,7 +16,13 @@ logs: ## Show logs
 # ================================================================================================
 # redis
 # ================================================================================================
-.PHONY: redis-cli
+.PHONY: redis-cli redis-up redis-down
+
+redis-up: ## Start redis container
+	docker compose up -d redis --build
+
+redis-down: ## Stop redis container
+	docker compose down -v redis
 
 redis-cli: ## Run redis CLI
 	docker compose exec redis redis-cli

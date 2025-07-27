@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"math/rand"
 	"strconv"
 	"strings"
 	"time"
@@ -52,16 +51,12 @@ func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCo
 	slog.InfoContext(ctx, "gen redis customer key", "customer_id", customerID)
 
 	for _, userID := range userIDs {
-		userItemCount := rand.Intn(itemMaxCount-itemMinCount+1) + itemMinCount
 		userItemIDs := bp.generateItemIDs(itemMinCount, itemMaxCount)
 
 		key := bp.formatRedisKey(customerID, userID)
-		itemIDStrings := make([]string, userItemCount)
+		itemIDStrings := make([]string, len(userItemIDs))
 
-		for i := range userItemCount {
-			if i >= len(userItemIDs) {
-				break
-			}
+		for i := range len(userItemIDs) {
 			itemID := userItemIDs[i]
 			itemIDStrings[i] = fmt.Sprintf("%d", itemID)
 		}

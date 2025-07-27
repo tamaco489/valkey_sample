@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -14,7 +15,7 @@ import (
 
 // batchProcessor handles batch operations
 type batchProcessor struct {
-	userItemMap map[string]string // キー: customer:{id}:user:{id}:items, 値: item_idのカンマ区切り
+	userItemMap map[string]string // キー: customer:{customer_id}:user:{user_id}:items, 値: item_idのカンマ区切り
 	redisClient redis.RedisService
 }
 
@@ -26,11 +27,7 @@ func newBatchProcessor() *batchProcessor {
 	redisClient, err := redis.NewClient(redisAddr, cfg.Redis.Password, redisDB)
 	if err != nil {
 		slog.Error("failed to create Redis client", "error", err)
-		slog.Info("continuing without Redis connection - data will be generated but not saved")
-		return &batchProcessor{
-			userItemMap: make(map[string]string),
-			redisClient: nil,
-		}
+		os.Exit(1)
 	}
 
 	return &batchProcessor{

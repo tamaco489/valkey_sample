@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -11,7 +12,7 @@ func (c *redisClient) SetWithPipeline(ctx context.Context, kv map[string]string,
 		pipe.Set(ctx, key, value, expiration)
 	}
 	if _, err := pipe.Exec(ctx); err != nil {
-		return err
+		return fmt.Errorf("failed to save data to Redis: %w", err)
 	}
 	return nil
 }

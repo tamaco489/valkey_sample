@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"math/rand"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -27,10 +28,7 @@ func newBatchProcessor() *batchProcessor {
 	redisClient, err := redis.NewClient(redisAddr, cfg.Redis.Password, redisDB)
 	if err != nil {
 		slog.Error("failed to create Redis client", "error", err)
-		return &batchProcessor{
-			userItemMap: make(map[string]string),
-			redisClient: nil,
-		}
+		os.Exit(1)
 	}
 
 	return &batchProcessor{
@@ -77,7 +75,8 @@ func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCo
 	}
 
 	slog.InfoContext(ctx, "saving data to Redis using pipeline")
-	if err := bp.redisClient.SetWithPipeline(ctx, bp.userItemMap, 24*time.Hour); err != nil {
+	expiration := 24 * time.Hour
+	if err := bp.redisClient.SetWithPipeline(ctx, bp.userItemMap, expiration); err != nil {
 		slog.ErrorContext(ctx, "failed to save data to Redis", "error", err)
 		return fmt.Errorf("failed to save data to Redis: %w", err)
 	}

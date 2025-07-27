@@ -15,26 +15,21 @@ import (
 
 // batchProcessor handles batch operations
 type batchProcessor struct {
-	userItemMap map[string]string // キー: customer:{id}:user:{id}:items, 値: item_idのリスト
+	userItemMap map[string]string // キー: customer:{id}:user:{id}:items, 値: item_idのカンマ区切り
 	redisClient redis.RedisService
 }
 
 // newBatchProcessor creates a new batch processor
 func newBatchProcessor() *batchProcessor {
-	// 設定を読み込み
 	cfg := config.Load()
-
-	// Redis接続情報を構築
 	redisAddr := fmt.Sprintf("%s:%s", cfg.Redis.Host, cfg.Redis.Port)
 	redisDB, _ := strconv.Atoi(cfg.Redis.DB)
-
-	// Redisクライアントを作成
 	redisClient, err := redis.NewClient(redisAddr, cfg.Redis.Password, redisDB)
 	if err != nil {
-		// エラーハンドリングは簡略化（実際の実装では適切に処理）
 		slog.Error("failed to create Redis client", "error", err)
 		return &batchProcessor{
 			userItemMap: make(map[string]string),
+			redisClient: nil,
 		}
 	}
 
@@ -76,19 +71,17 @@ func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCo
 	}
 
 	slog.InfoContext(ctx, "user item map contents", "total_keys", len(bp.userItemMap))
-	for key, itemIDs := range bp.userItemMap {
+	for key, itemIDsStr := range bp.userItemMap {
+		itemIDs := strings.Split(itemIDsStr, ",")
 		slog.InfoContext(ctx, "user items", "key", key, "item_count", len(itemIDs), "item_ids", itemIDs)
 	}
 
-	// Redis に pipelineで データを保存
-	if bp.redisClient != nil {
-		slog.InfoContext(ctx, "saving data to Redis using pipeline")
-		if err := bp.redisClient.SetWithPipeline(ctx, bp.userItemMap, 24*time.Hour); err != nil {
-			slog.ErrorContext(ctx, "failed to save data to Redis", "error", err)
-			return fmt.Errorf("failed to save data to Redis: %w", err)
-		}
-		slog.InfoContext(ctx, "successfully saved data to Redis using pipeline")
+	slog.InfoContext(ctx, "saving data to Redis using pipeline")
+	if err := bp.redisClient.SetWithPipeline(ctx, bp.userItemMap, 24*time.Hour); err != nil {
+		slog.ErrorContext(ctx, "failed to save data to Redis", "error", err)
+		return fmt.Errorf("failed to save data to Redis: %w", err)
 	}
+	slog.InfoContext(ctx, "successfully saved data to Redis using pipeline")
 
 	bp.redisClient.Close()
 

@@ -9,11 +9,12 @@ func (bp *batchProcessor) generateItemIDs(itemMinCount, itemMaxCount int) []uint
 		allItemIDs[i] = uint32(ItemIDStart + i)
 	}
 
-	itemCount := rand.Intn(itemMaxCount-itemMinCount+1) + itemMinCount
-	selectedItemIDs := make([]uint32, itemCount)
 	rand.Shuffle(len(allItemIDs), func(i, j int) {
 		allItemIDs[i], allItemIDs[j] = allItemIDs[j], allItemIDs[i]
 	})
+
+	itemCount := rand.Intn(itemMaxCount-itemMinCount+1) + itemMinCount
+	selectedItemIDs := make([]uint32, itemCount)
 
 	for i := range itemCount {
 		selectedItemIDs[i] = allItemIDs[i]

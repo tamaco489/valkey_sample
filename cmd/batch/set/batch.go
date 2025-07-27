@@ -65,7 +65,7 @@ func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCo
 	}
 
 	expiration := 24 * time.Hour
-	if err := bp.redisClient.SetWithPipeline(ctx, bp.userItemMap, expiration); err != nil {
+	if err := bp.redisClient.SetBatchWithPipeline(ctx, bp.userItemMap, expiration); err != nil {
 		slog.ErrorContext(ctx, "failed to save data to Redis", "error", err)
 		return fmt.Errorf("failed to save data to Redis: %w", err)
 	}

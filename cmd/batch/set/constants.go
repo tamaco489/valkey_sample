@@ -21,14 +21,14 @@ const (
 // Data generation mode constants
 const (
 	// 大量データ用設定
-	LargeDataUserCount    = 1000 // ランダムに選択するuser数
-	LargeDataItemMinCount = 100  // 最小選択item数
-	LargeDataItemMaxCount = 500  // 最大選択item数
+	largeDataUserCount    = 1000 // ランダムに選択する user 数
+	largeDataItemMinCount = 100  // 最小選択 item 数
+	largeDataItemMaxCount = 500  // 最大選択 item 数
 
 	// 少量データ用設定
-	SmallDataUserCount    = 3 // ランダムに選択するuser数
-	SmallDataItemMinCount = 2 // 最小選択item数
-	SmallDataItemMaxCount = 5 // 最大選択item数
+	smallDataUserCount    = 3 // ランダムに選択する user 数
+	smallDataItemMinCount = 2 // 最小選択 item 数
+	smallDataItemMaxCount = 5 // 最大選択 item 数
 )
 
 // Redis key format constants

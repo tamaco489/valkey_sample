@@ -11,14 +11,14 @@ type DataConfig struct {
 func GetDataConfig(isLargeData bool) DataConfig {
 	if isLargeData {
 		return DataConfig{
-			UserCount:    LargeDataUserCount,
-			ItemMinCount: LargeDataItemMinCount,
-			ItemMaxCount: LargeDataItemMaxCount,
+			UserCount:    largeDataUserCount,
+			ItemMinCount: largeDataItemMinCount,
+			ItemMaxCount: largeDataItemMaxCount,
 		}
 	}
 	return DataConfig{
-		UserCount:    SmallDataUserCount,
-		ItemMinCount: SmallDataItemMinCount,
-		ItemMaxCount: SmallDataItemMaxCount,
+		UserCount:    smallDataUserCount,
+		ItemMinCount: smallDataItemMinCount,
+		ItemMaxCount: smallDataItemMaxCount,
 	}
 }

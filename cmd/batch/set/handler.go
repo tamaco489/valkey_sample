@@ -38,9 +38,9 @@ func (bp *batchProcessor) setUserItemData(ctx context.Context, customerID, userI
 }
 
 // ProcessBatch processes the entire batch
-func (bp *batchProcessor) processBatch(ctx context.Context, dataConfig DataConfig) error {
-	userIDs := bp.generateUserIDs(dataConfig.UserCount)
-	itemIDs := bp.generateItemIDs(dataConfig.ItemMinCount, dataConfig.ItemMaxCount)
+func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCount, itemMaxCount int) error {
+	userIDs := bp.generateUserIDs(userCount)
+	itemIDs := bp.generateItemIDs(itemMinCount, itemMaxCount)
 
 	slog.InfoContext(ctx, "Generated IDs",
 		"userCount", len(userIDs),
@@ -54,8 +54,8 @@ func (bp *batchProcessor) processBatch(ctx context.Context, dataConfig DataConfi
 		customerID := bp.generateCustomerID()
 
 		// このuserIDに対して、ランダムに選択されたitemIDを選択
-		userItemCount := rand.Intn(dataConfig.ItemMaxCount-dataConfig.ItemMinCount+1) + dataConfig.ItemMinCount
-		userItemIDs := bp.generateItemIDs(dataConfig.ItemMinCount, dataConfig.ItemMaxCount) // 新しいランダム選択
+		userItemCount := rand.Intn(itemMaxCount-itemMinCount+1) + itemMinCount
+		userItemIDs := bp.generateItemIDs(itemMinCount, itemMaxCount) // 新しいランダム選択
 
 		// 選択されたitemIDの数だけ処理
 		for i := range userItemCount {
@@ -89,17 +89,27 @@ func (bp *batchProcessor) processBatch(ctx context.Context, dataConfig DataConfi
 func handler(isLargeData bool) error {
 	ctx := context.Background()
 
-	dataConfig := GetDataConfig(isLargeData)
+	// データサイズに応じた設定を決定
+	var userCount, itemMinCount, itemMaxCount int
+	if isLargeData {
+		userCount = largeDataUserCount
+		itemMinCount = largeDataItemMinCount
+		itemMaxCount = largeDataItemMaxCount
+	} else {
+		userCount = smallDataUserCount
+		itemMinCount = smallDataItemMinCount
+		itemMaxCount = smallDataItemMaxCount
+	}
 
 	slog.InfoContext(ctx, "Starting batch processing",
 		"dataSize", map[bool]string{true: "large", false: "small"}[isLargeData],
-		"userCount", dataConfig.UserCount,
-		"itemMinCount", dataConfig.ItemMinCount,
-		"itemMaxCount", dataConfig.ItemMaxCount)
+		"userCount", userCount,
+		"itemMinCount", itemMinCount,
+		"itemMaxCount", itemMaxCount)
 
 	batchProcessor := newBatchProcessor()
 
-	if err := batchProcessor.processBatch(ctx, dataConfig); err != nil {
+	if err := batchProcessor.processBatch(ctx, userCount, itemMinCount, itemMaxCount); err != nil {
 		return fmt.Errorf("batch processing failed: %w", err)
 	}
 

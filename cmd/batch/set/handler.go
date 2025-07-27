@@ -7,46 +7,23 @@ import (
 	"math/rand"
 )
 
-// BatchProcessor handles batch operations
-type BatchProcessor struct {
+// batchProcessor handles batch operations
+type batchProcessor struct {
 }
 
-// NewBatchProcessor creates a new batch processor
-func NewBatchProcessor() *BatchProcessor {
-	return &BatchProcessor{}
+// newBatchProcessor creates a new batch processor
+func newBatchProcessor() *batchProcessor {
+	return &batchProcessor{}
 }
 
-// GenerateUserIDs generates user IDs in the specified range
-func (bp *BatchProcessor) GenerateUserIDs() []uint32 {
-	var userIDs []uint32
-	for i := UserIDStart; i <= UserIDEnd; i++ {
-		userIDs = append(userIDs, uint32(i))
-	}
-	return userIDs
-}
-
-// GenerateItemIDs generates item IDs in the specified range
-func (bp *BatchProcessor) GenerateItemIDs() []uint32 {
-	var itemIDs []uint32
-	for i := ItemIDStart; i <= ItemIDEnd; i++ {
-		itemIDs = append(itemIDs, uint32(i))
-	}
-	return itemIDs
-}
-
-// GenerateCustomerID generates a random customer ID
-func (bp *BatchProcessor) GenerateCustomerID() uint32 {
-	return uint32(rand.Intn(CustomerIDMax-CustomerIDMin+1) + CustomerIDMin)
-}
-
-// CreateRedisKey creates a Redis key with the specified format
-func (bp *BatchProcessor) CreateRedisKey(customerID, userID uint32) string {
+// formatRedisKey creates a Redis key with the specified format
+func (bp *batchProcessor) formatRedisKey(customerID, userID uint32) string {
 	return fmt.Sprintf(RedisKeyFormat, customerID, userID)
 }
 
-// SetUserItemData sets user-item data
-func (bp *BatchProcessor) SetUserItemData(ctx context.Context, customerID, userID, itemID uint32) error {
-	key := bp.CreateRedisKey(customerID, userID)
+// setUserItemData sets user-item data
+func (bp *batchProcessor) setUserItemData(ctx context.Context, customerID, userID, itemID uint32) error {
+	key := bp.formatRedisKey(customerID, userID)
 
 	// データの例（実際の要件に応じて変更）
 	data := fmt.Sprintf(DataFormat, customerID, userID, itemID)
@@ -62,20 +39,35 @@ func (bp *BatchProcessor) SetUserItemData(ctx context.Context, customerID, userI
 }
 
 // ProcessBatch processes the entire batch
-func (bp *BatchProcessor) ProcessBatch(ctx context.Context) error {
+func (bp *batchProcessor) processBatch(ctx context.Context) error {
 	slog.InfoContext(ctx, "Starting batch processing")
 
-	userIDs := bp.GenerateUserIDs()
-	itemIDs := bp.GenerateItemIDs()
+	userIDs := bp.generateUserIDs()
+	itemIDs := bp.generateItemIDs()
 
-	totalProcessed := 0
-	totalErrors := 0
+	slog.InfoContext(ctx, "Generated IDs",
+		"userCount", len(userIDs),
+		"itemCount", len(itemIDs))
 
+	var totalProcessed int
+	var totalErrors int
+
+	// 各userIDに対して、ランダムに選択されたitemIDを関連付ける
 	for _, userID := range userIDs {
-		for _, itemID := range itemIDs {
-			customerID := bp.GenerateCustomerID()
+		customerID := bp.generateCustomerID()
 
-			err := bp.SetUserItemData(ctx, customerID, userID, itemID)
+		// このuserIDに対して、ランダムに100-500個のitemIDを選択
+		userItemCount := rand.Intn(ItemIDMaxCount-ItemIDMinCount+1) + ItemIDMinCount
+		userItemIDs := bp.generateItemIDs() // 新しいランダム選択
+
+		// 選択されたitemIDの数だけ処理
+		for i := range userItemCount {
+			if i >= len(userItemIDs) {
+				break
+			}
+			itemID := userItemIDs[i]
+
+			err := bp.setUserItemData(ctx, customerID, userID, itemID)
 			if err != nil {
 				slog.ErrorContext(ctx, "Failed to set user item data",
 					"error", err,
@@ -101,10 +93,10 @@ func handler() error {
 	ctx := context.Background()
 
 	// バッチプロセッサーを作成
-	batchProcessor := NewBatchProcessor()
+	batchProcessor := newBatchProcessor()
 
 	// バッチ処理を実行
-	err := batchProcessor.ProcessBatch(ctx)
+	err := batchProcessor.processBatch(ctx)
 	if err != nil {
 		return fmt.Errorf("batch processing failed: %w", err)
 	}

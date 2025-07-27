@@ -45,15 +45,9 @@ func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCo
 			itemID := userItemIDs[i]
 
 			key := bp.formatRedisKey(customerID, userID)
-
 			data := fmt.Sprintf(DataFormat, customerID, userID, itemID)
 
-			slog.InfoContext(ctx, "Setting user item data",
-				"key", key,
-				"data", data,
-				"customerID", customerID,
-				"userID", userID,
-				"itemID", itemID)
+			slog.InfoContext(ctx, "Setting user item data", "key", key, "data", data, "customerID", customerID, "userID", userID, "itemID", itemID)
 
 			totalProcessed++
 		}

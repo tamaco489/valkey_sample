@@ -6,11 +6,11 @@ import (
 	"log/slog"
 )
 
-func handler(isLargeData bool) error {
+func handler(isLarge bool) error {
 	ctx := context.Background()
-	cfg := NewDataConfig(isLargeData)
+	cfg := NewDataConfig(isLarge)
 	slog.InfoContext(ctx, "Starting batch processing",
-		"dataSize", map[bool]string{true: "large", false: "small"}[isLargeData],
+		"dataSize", map[bool]string{true: "large", false: "small"}[isLarge],
 		"userCount", cfg.UserCount,
 		"itemMinCount", cfg.ItemMinCount,
 		"itemMaxCount", cfg.ItemMaxCount)

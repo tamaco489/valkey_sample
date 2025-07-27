@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"math/rand"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -28,7 +27,11 @@ func newBatchProcessor() *batchProcessor {
 	redisClient, err := redis.NewClient(redisAddr, cfg.Redis.Password, redisDB)
 	if err != nil {
 		slog.Error("failed to create Redis client", "error", err)
-		os.Exit(1)
+		slog.Info("continuing without Redis connection - data will be generated but not saved")
+		return &batchProcessor{
+			userItemMap: make(map[string]string),
+			redisClient: nil,
+		}
 	}
 
 	return &batchProcessor{
@@ -74,15 +77,19 @@ func (bp *batchProcessor) processBatch(ctx context.Context, userCount, itemMinCo
 		slog.InfoContext(ctx, "user items", "key", key, "item_count", len(itemIDs), "item_ids", itemIDs)
 	}
 
-	slog.InfoContext(ctx, "saving data to Redis using pipeline")
-	expiration := 24 * time.Hour
-	if err := bp.redisClient.SetWithPipeline(ctx, bp.userItemMap, expiration); err != nil {
-		slog.ErrorContext(ctx, "failed to save data to Redis", "error", err)
-		return fmt.Errorf("failed to save data to Redis: %w", err)
+	// Redisにデータを保存（接続可能な場合のみ）
+	if bp.redisClient != nil {
+		slog.InfoContext(ctx, "saving data to Redis using pipeline")
+		expiration := 24 * time.Hour
+		if err := bp.redisClient.SetWithPipeline(ctx, bp.userItemMap, expiration); err != nil {
+			slog.ErrorContext(ctx, "failed to save data to Redis", "error", err)
+			return fmt.Errorf("failed to save data to Redis: %w", err)
+		}
+		slog.InfoContext(ctx, "successfully saved data to Redis using pipeline")
+		bp.redisClient.Close()
+	} else {
+		slog.InfoContext(ctx, "skipping Redis save - no connection available")
 	}
-	slog.InfoContext(ctx, "successfully saved data to Redis using pipeline")
-
-	bp.redisClient.Close()
 
 	return nil
 }

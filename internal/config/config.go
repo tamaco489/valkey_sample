@@ -11,21 +11,11 @@ import (
 // Config represents application configuration
 type Config struct {
 	Server ServerConfig
-	Redis  RedisConfig
 }
 
 // ServerConfig represents server configuration
 type ServerConfig struct {
 	Port string
-}
-
-// RedisConfig represents Redis configuration
-type RedisConfig struct {
-	Host     string
-	Port     string
-	Password string
-	DB       string
-	PoolSize string
 }
 
 // Load loads configuration from environment variables and .env file
@@ -36,13 +26,6 @@ func Load() *Config {
 	return &Config{
 		Server: ServerConfig{
 			Port: getEnv("PORT", "8080"),
-		},
-		Redis: RedisConfig{
-			Host:     getEnv("REDIS_HOST", "redis"),
-			Port:     getEnv("REDIS_PORT", "6379"),
-			Password: getEnv("REDIS_PASSWORD", ""),
-			DB:       getEnv("REDIS_DB", "0"),
-			PoolSize: getEnv("REDIS_POOL_SIZE", "3"),
 		},
 	}
 }

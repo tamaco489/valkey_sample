@@ -6,10 +6,8 @@ import (
 	"log/slog"
 	"math/rand"
 	"os"
-	"strconv"
 	"time"
 
-	"github.com/tamaco489/valkey_sample/internal/config"
 	"github.com/tamaco489/valkey_sample/pkg/core/infrastructure/redis"
 )
 
@@ -21,10 +19,9 @@ type batchProcessor struct {
 
 // newBatchProcessor creates a new batch processor
 func newBatchProcessor() *batchProcessor {
-	cfg := config.Load()
-	redisAddr := fmt.Sprintf("%s:%s", cfg.Redis.Host, cfg.Redis.Port)
-	redisDB, _ := strconv.Atoi(cfg.Redis.DB)
-	redisClient, err := redis.NewClient(redisAddr, cfg.Redis.Password, redisDB)
+	cfg := redis.LoadConfig()
+	redisAddr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
+	redisClient, err := redis.NewClient(redisAddr, cfg.Password, cfg.DB)
 	if err != nil {
 		slog.Error("failed to create Redis client", "error", err)
 		os.Exit(1)

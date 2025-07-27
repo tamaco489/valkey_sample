@@ -16,10 +16,14 @@ type redisClient struct {
 // NewClient creates a new Redis client
 func NewClient(addr, password string, db int) (RedisService, error) {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     addr,
-		Password: password,
-		DB:       db,
-		PoolSize: 3,
+		Addr:         addr,
+		Password:     password,
+		DB:           db,
+		PoolSize:     3,
+		DialTimeout:  5 * time.Second,
+		ReadTimeout:  3 * time.Second,
+		WriteTimeout: 3 * time.Second,
+		MaxRetries:   3,
 	})
 
 	// Test the connection

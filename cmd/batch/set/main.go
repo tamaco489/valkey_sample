@@ -6,12 +6,11 @@ import (
 )
 
 func main() {
-	// コマンドライン引数の定義
-	var isLargeData bool
-	flag.BoolVar(&isLargeData, "large", false, "Generate large amount of data (default: small)")
+	var isLarge bool
+	flag.BoolVar(&isLarge, "large", false, "Generate large amount of data (default: small)")
 	flag.Parse()
 
-	if err := handler(isLargeData); err != nil {
+	if err := handler(isLarge); err != nil {
 		log.Fatal(err)
 	}
 }

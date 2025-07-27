@@ -1,44 +1,25 @@
 # ================================================================================================
 # api
 # ================================================================================================
-.PHONY: build run test clean
+# docker
+.PHONY: run down logs
 
-build: ## Build the API
-	go build -o build/api/core/main cmd/api/core/main.go
-	chmod +x build/api/core/main
+run: ## Start containers
+	docker compose up -d core-api redis
 
-run: build ## Run the API
-	build/api/core/main -p 8080
+down: ## Stop containers
+	docker compose down -v core-api redis
 
-test: ## Run tests
-	go test ./...
-
-clean:
-	rm -rf build/api/core/main
-	go clean
+logs: ## Show logs
+	docker compose logs -f core-api
 
 # ================================================================================================
-# valkey
+# redis
 # ================================================================================================
-.PHONY: valkey-up valkey-down valkey-restart valkey-rebuild valkey-logs valkey-cli
+.PHONY: redis-cli
 
-valkey-up: ## Start valkey
-	docker compose up -d valkey
-
-valkey-down: ## Stop valkey
-	docker compose down valkey
-
-valkey-restart: ## Restart valkey
-	docker compose restart valkey
-
-valkey-rebuild: ## Rebuild valkey
-	docker compose down -v valkey && docker compose build --no-cache valkey && docker compose up -d valkey
-
-valkey-logs: ## Show valkey logs
-	docker compose logs -f valkey
-
-valkey-cli: ## Run valkey CLI
-	docker compose exec valkey valkey-cli
+redis-cli: ## Run redis CLI
+	docker compose exec redis redis-cli
 
 # ================================================================================================
 # aws (elasticache)

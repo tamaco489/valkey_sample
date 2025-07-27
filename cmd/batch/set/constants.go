@@ -1,5 +1,11 @@
 package main
 
+// Customer ID constants
+const (
+	CustomerIDMin = 1001
+	CustomerIDMax = 1999
+)
+
 // User ID constants
 const (
 	UserIDStart = 10000001
@@ -10,12 +16,6 @@ const (
 const (
 	ItemIDStart = 30000001
 	ItemIDEnd   = 30001000
-)
-
-// Customer ID constants
-const (
-	CustomerIDMin = 1001
-	CustomerIDMax = 1999
 )
 
 // Redis key format constants
